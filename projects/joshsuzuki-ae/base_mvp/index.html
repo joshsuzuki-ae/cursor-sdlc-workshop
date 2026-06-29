@@ -2,689 +2,835 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Brick Breaker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Josh Suzuki</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        --bg: #0e1118;
-        --panel: #161b26;
-        --panel-border: rgba(232, 234, 242, 0.12);
-        --text: #e8eaf2;
-        --muted: rgba(232, 234, 242, 0.62);
-        --accent: #8ec5ff;
-        --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-          sans-serif;
+        --page-parchment: #f7f7f4;
+        --surface-cream: #f2f1ed;
+        --card-stone: #e6e5e0;
+        --surface-300: #ebeae5;
+        --border-sand: #d9d5cf;
+        --border-hairline: rgba(38, 37, 30, 0.1);
+        --border-medium: rgba(38, 37, 30, 0.2);
+        --espresso-ink: #26251e;
+        --deep-charcoal: #141414;
+        --muted-clay: #7a7974;
+        --edge-ash: #8f8e89;
+        --trace-smoke: #a1a19f;
+        --ember-orange: #f54e00;
+        --signal-green: #4ade80;
+        --brass-gold: #c08532;
+        --deep-moss: #34785c;
+        --timeline-thinking: #dfa88f;
+        --timeline-grep: #9fc9a2;
+        --timeline-read: #9fbbe0;
+        --timeline-edit: #c0a8dd;
+        --timeline-gold: #e8c87a;
+        --font-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --shadow-soft: 0 1px 2px rgba(38, 37, 30, 0.04), 0 8px 24px rgba(38, 37, 30, 0.06);
+        --sidebar-width: 240px;
       }
-      body {
-        margin: 0;
-        background: radial-gradient(ellipse 120% 80% at 50% -20%, #1a2744 0%, var(--bg) 55%);
-        color: var(--text);
-        font-family: var(--font-sans);
-        font-size: 15px;
-        line-height: 1.45;
-        -webkit-font-smoothing: antialiased;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 24px 16px 32px;
+
+      *,
+      *::before,
+      *::after {
         box-sizing: border-box;
       }
-      .layout {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 24px;
-        align-items: flex-start;
-        justify-content: center;
-        max-width: 900px;
+
+      html {
+        scroll-behavior: smooth;
       }
-      .game-column {
+
+      body {
+        margin: 0;
+        background: var(--page-parchment);
+        color: var(--espresso-ink);
+        font-family: var(--font-sans);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.5;
+        letter-spacing: -0.01em;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: var(--ember-orange);
+      }
+
+      .shell {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      /* Sidebar — Cursor IDE chrome */
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 28px 20px 24px;
+        border-right: 1px solid var(--border-hairline);
+        background: var(--surface-cream);
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 32px;
+      }
+
+      .brand {
+        display: flex;
         align-items: center;
+        gap: 10px;
+        padding: 0 4px;
       }
-      canvas {
-        background: #0f1628;
-        border: 2px solid var(--panel-border);
-        border-radius: 8px;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+
+      .brand-mark {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: var(--espresso-ink);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
       }
-      .hint {
-        font-size: 13px;
-        color: var(--muted);
-        text-align: center;
-        max-width: 480px;
-        margin: 0;
+
+      .brand-mark svg {
+        width: 16px;
+        height: 16px;
       }
-      .scoreboard {
-        width: 280px;
-        padding: 20px 20px 18px;
-        background: var(--panel);
-        border: 1px solid var(--panel-border);
-        border-radius: 12px;
-        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        min-width: 0;
       }
-      .scoreboard-section-title {
-        margin: 0 0 10px;
+
+      .brand-name {
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .brand-role {
+        font-family: var(--font-mono);
         font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.1em;
+        color: var(--muted-clay);
+        letter-spacing: 0;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .nav-label {
+        margin: 0 0 8px 8px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 500;
         text-transform: uppercase;
-        color: var(--muted);
+        letter-spacing: 0.06em;
+        color: var(--edge-ash);
       }
-      .leaderboard-block {
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid var(--panel-border);
+
+      .nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        color: var(--muted-clay);
+        transition: background 0.15s ease, color 0.15s ease;
       }
-      .leaderboard-block .scoreboard-section-title {
-        margin-bottom: 12px;
+
+      .nav a:hover {
+        background: rgba(38, 37, 30, 0.05);
+        color: var(--espresso-ink);
       }
-      .lb-list {
+
+      .nav a.active {
+        background: var(--card-stone);
+        color: var(--espresso-ink);
+      }
+
+      .nav-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--trace-smoke);
+        flex-shrink: 0;
+      }
+
+      .nav a.active .nav-dot {
+        background: var(--ember-orange);
+      }
+
+      .sidebar-footer {
+        margin-top: auto;
+        padding: 12px 8px 0;
+        border-top: 1px solid var(--border-hairline);
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--muted-clay);
+      }
+
+      .status-pill::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--signal-green);
+        box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+      }
+
+      /* Main content */
+      .main {
+        padding: 48px 56px 80px;
+        max-width: 820px;
+      }
+
+      .hero {
+        margin-bottom: 72px;
+        animation: fadeUp 0.5s ease both;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--muted-clay);
+      }
+
+      .eyebrow-pill {
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: var(--timeline-grep);
+        color: var(--espresso-ink);
+        font-size: 11px;
+      }
+
+      h1 {
+        margin: 0 0 20px;
+        font-size: clamp(2.5rem, 5vw, 4.25rem);
+        font-weight: 400;
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+        max-width: 14ch;
+      }
+
+      .hero-lead {
+        margin: 0 0 28px;
+        max-width: 52ch;
+        font-size: 18px;
+        line-height: 1.55;
+        color: var(--muted-clay);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      }
+
+      .btn-primary {
+        background: var(--espresso-ink);
+        color: var(--page-parchment);
+        border-color: var(--espresso-ink);
+      }
+
+      .btn-primary:hover {
+        background: var(--deep-charcoal);
+        color: var(--page-parchment);
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--espresso-ink);
+        border-color: var(--border-medium);
+      }
+
+      .btn-ghost:hover {
+        background: var(--card-stone);
+        color: var(--espresso-ink);
+        border-color: var(--border-sand);
+      }
+
+      section {
+        margin-bottom: 72px;
+        scroll-margin-top: 32px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-hairline);
+      }
+
+      h2 {
         margin: 0;
-        padding: 0;
-        list-style: none;
+        font-size: 13px;
+        font-family: var(--font-mono);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--edge-ash);
+      }
+
+      .section-count {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--trace-smoke);
+      }
+
+      .about-grid {
+        display: grid;
+        gap: 20px;
+      }
+
+      .about-card {
+        padding: 24px;
+        background: var(--surface-300);
+        border: 1px solid var(--border-hairline);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .about-card p {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--espresso-ink);
+      }
+
+      .about-card p + p {
+        margin-top: 14px;
+        color: var(--muted-clay);
+        font-size: 16px;
+      }
+
+      .timeline {
         display: flex;
         flex-direction: column;
         gap: 0;
       }
-      .lb-row {
+
+      .timeline-item {
         display: grid;
-        grid-template-columns: 22px 1fr;
-        gap: 10px 12px;
-        align-items: start;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(232, 234, 242, 0.06);
-        font-size: 13px;
-        line-height: 1.35;
+        grid-template-columns: 120px 1fr;
+        gap: 20px;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border-hairline);
       }
-      .lb-row:last-child {
+
+      .timeline-item:last-child {
         border-bottom: none;
         padding-bottom: 0;
       }
-      .lb-row:first-child {
-        padding-top: 2px;
-      }
-      .lb-row--empty {
-        color: var(--muted);
-        opacity: 0.45;
-        font-size: 13px;
-        grid-template-columns: 1fr;
-        padding: 8px 0;
-      }
-      .lb-rank {
-        font-size: 11px;
-        font-weight: 700;
-        font-variant-numeric: tabular-nums;
-        color: var(--muted);
-        padding-top: 2px;
-        letter-spacing: 0.02em;
-      }
-      .lb-body {
-        min-width: 0;
-      }
-      .lb-line1 {
-        margin-bottom: 4px;
-      }
-      .lb-name {
-        display: block;
-        font-size: 15px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: var(--accent);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 100%;
-        line-height: 1.25;
-      }
-      .lb-line2 {
-        font-size: 13px;
-        font-weight: 600;
-        font-variant-numeric: tabular-nums;
-        letter-spacing: -0.02em;
-        color: var(--text);
-        opacity: 0.88;
-      }
-      .lb-line2 span {
-        color: var(--muted);
-        font-weight: 500;
+
+      .timeline-year {
+        font-family: var(--font-mono);
         font-size: 12px;
+        color: var(--edge-ash);
+        padding-top: 3px;
       }
-      .status {
-        margin: 18px 0 0;
-        padding-top: 16px;
-        border-top: 1px solid var(--panel-border);
-        font-size: 13px;
-        line-height: 1.5;
+
+      .timeline-body h3 {
+        margin: 0 0 6px;
+        font-size: 18px;
         font-weight: 500;
-        color: var(--accent);
-        min-height: 3.2em;
-      }
-      .player-setup {
-        margin-bottom: 4px;
-      }
-      .player-setup label {
-        display: block;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-bottom: 8px;
-      }
-      .player-setup input {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 10px 12px;
-        font-size: 14px;
-        font-family: inherit;
-        border-radius: 8px;
-        border: 1px solid var(--panel-border);
-        background: rgba(0, 0, 0, 0.28);
-        color: var(--text);
-      }
-      .player-setup input:focus {
-        outline: 2px solid var(--accent);
-        outline-offset: 1px;
-      }
-      .player-playing {
-        font-size: 14px;
-        line-height: 1.45;
-        margin-bottom: 16px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--panel-border);
-      }
-      .player-playing strong {
-        color: var(--accent);
-        font-weight: 600;
         letter-spacing: -0.02em;
       }
-      #player-attempt-line {
-        font-size: 13px;
-        color: var(--muted);
-        font-weight: 500;
-      }
-      .player-summary {
-        margin-bottom: 14px;
-        padding-bottom: 14px;
-        border-bottom: 1px solid var(--panel-border);
-      }
-      .player-summary-title {
-        margin: 0 0 6px;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-      .player-summary-body {
-        margin: 0;
+
+      .timeline-meta {
+        margin: 0 0 10px;
         font-size: 14px;
-        line-height: 1.45;
-        color: var(--text);
+        color: var(--muted-clay);
       }
-      .player-summary-body strong {
-        color: var(--accent);
-        font-weight: 600;
+
+      .timeline-body p {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.55;
+        color: var(--muted-clay);
+        max-width: 56ch;
       }
-      .hidden {
-        display: none !important;
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 12px;
+      }
+
+      .tag {
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        border: 1px solid var(--border-hairline);
+        color: var(--muted-clay);
+        background: var(--page-parchment);
+      }
+
+      .tag--thinking {
+        background: var(--timeline-thinking);
+        border-color: transparent;
+        color: var(--espresso-ink);
+      }
+
+      .tag--grep {
+        background: var(--timeline-grep);
+        border-color: transparent;
+      }
+
+      .tag--read {
+        background: var(--timeline-read);
+        border-color: transparent;
+      }
+
+      .tag--edit {
+        background: var(--timeline-edit);
+        border-color: transparent;
+      }
+
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 14px;
+      }
+
+      .project-card {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        background: var(--page-parchment);
+        border: 1px solid var(--border-hairline);
+        border-radius: var(--radius-lg);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+      }
+
+      .project-card:hover {
+        border-color: var(--border-medium);
+        box-shadow: var(--shadow-soft);
+        transform: translateY(-1px);
+      }
+
+      .project-card:hover .project-title {
+        color: var(--ember-orange);
+      }
+
+      .project-icon {
+        width: 36px;
+        height: 36px;
+        margin-bottom: 14px;
+        border-radius: var(--radius-sm);
+        background: var(--card-stone);
+        display: grid;
+        place-items: center;
+        font-family: var(--font-mono);
+        font-size: 14px;
+        color: var(--muted-clay);
+      }
+
+      .project-title {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        transition: color 0.15s ease;
+      }
+
+      .project-desc {
+        margin: 0 0 16px;
+        flex: 1;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--muted-clay);
+      }
+
+      .project-link {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--ember-orange);
+      }
+
+      .contact-panel {
+        padding: 28px;
+        background: var(--espresso-ink);
+        color: var(--page-parchment);
+        border-radius: var(--radius-lg);
+      }
+
+      .contact-panel h3 {
+        margin: 0 0 8px;
+        font-size: 22px;
+        font-weight: 400;
+        letter-spacing: -0.03em;
+      }
+
+      .contact-panel p {
+        margin: 0 0 20px;
+        font-size: 15px;
+        line-height: 1.55;
+        color: rgba(247, 247, 244, 0.72);
+        max-width: 48ch;
+      }
+
+      .contact-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .contact-links a {
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-family: var(--font-mono);
+        border: 1px solid rgba(247, 247, 244, 0.2);
+        color: var(--page-parchment);
+        transition: background 0.15s ease, border-color 0.15s ease;
+      }
+
+      .contact-links a:hover {
+        background: rgba(247, 247, 244, 0.08);
+        border-color: rgba(247, 247, 244, 0.35);
+        color: var(--page-parchment);
+      }
+
+      .site-footer {
+        margin-top: 48px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-hairline);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--trace-smoke);
+      }
+
+      .mobile-header {
+        display: none;
+      }
+
+      @media (max-width: 860px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          display: none;
+        }
+
+        .mobile-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 20px;
+          border-bottom: 1px solid var(--border-hairline);
+          background: var(--surface-cream);
+          position: sticky;
+          top: 0;
+          z-index: 10;
+        }
+
+        .mobile-nav {
+          display: flex;
+          gap: 16px;
+          font-size: 13px;
+        }
+
+        .mobile-nav a {
+          color: var(--muted-clay);
+        }
+
+        .main {
+          padding: 32px 20px 64px;
+        }
+
+        .timeline-item {
+          grid-template-columns: 1fr;
+          gap: 6px;
+        }
+
+        h1 {
+          max-width: none;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="layout">
-      <div class="game-column">
-        <canvas id="game" width="480" height="360" tabindex="0" aria-label="Brick Breaker"></canvas>
-        <p class="hint">
-          Name yourself in the panel (you can rename after each game) · ← → or A D · Space or Enter · mouse
-        </p>
+    <header class="mobile-header" aria-label="Mobile navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 4h10M3 8h7M3 12h10" stroke="#f7f7f4" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </div>
+        <span class="brand-name">Josh Suzuki</span>
       </div>
-      <aside class="scoreboard" aria-label="Scoreboard">
-        <div class="player-summary hidden" id="player-summary" aria-live="polite">
-          <p class="player-summary-title">Last game</p>
-          <p class="player-summary-body" id="player-summary-body"></p>
+      <nav class="mobile-nav" aria-label="Sections">
+        <a href="#about">About</a>
+        <a href="#work">Work</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <div class="shell">
+      <aside class="sidebar" aria-label="Site navigation">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 4h10M3 8h7M3 12h10" stroke="#f7f7f4" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">Josh Suzuki</span>
+            <span class="brand-role">Account Executive</span>
+          </div>
         </div>
-        <div class="player-setup" id="player-setup">
-          <label for="player-name" id="player-name-label">Your name</label>
-          <input
-            type="text"
-            id="player-name"
-            maxlength="24"
-            placeholder="Enter name, then Space or Enter"
-            autocomplete="username"
-            spellcheck="false"
-          />
+
+        <nav class="nav" aria-label="Primary">
+          <p class="nav-label">Explorer</p>
+          <a href="#about" class="nav-link" data-section="about"><span class="nav-dot"></span>About</a>
+          <a href="#work" class="nav-link" data-section="work"><span class="nav-dot"></span>Work</a>
+          <a href="#projects" class="nav-link" data-section="projects"><span class="nav-dot"></span>Projects</a>
+          <a href="#contact" class="nav-link" data-section="contact"><span class="nav-dot"></span>Contact</a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <span class="status-pill">Available for demos</span>
         </div>
-        <div class="player-playing hidden" id="player-playing" aria-live="polite">
-          Playing as <strong id="player-display-name">—</strong><br />
-          <span id="player-attempt-line">Attempt <span id="player-attempt">—</span></span>
-        </div>
-        <div class="leaderboard-block">
-          <h3 class="scoreboard-section-title">Leaderboard</h3>
-          <div id="hud-top" class="lb-list" role="list" aria-live="polite"></div>
-        </div>
-        <p id="hud-status" class="status" aria-live="polite">Press Space to Start</p>
       </aside>
+
+      <main class="main">
+        <header class="hero" id="top">
+          <div class="eyebrow">
+            <span class="eyebrow-pill">Cursor</span>
+            <span>GTM · San Francisco</span>
+          </div>
+          <h1>Helping teams ship with AI.</h1>
+          <p class="hero-lead">
+            I'm an Account Executive at Cursor, partnering with engineering leaders to adopt
+            AI-native development workflows — from first pilot to org-wide rollout.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#contact">Get in touch</a>
+            <a class="btn btn-ghost" href="#work">View experience</a>
+          </div>
+        </header>
+
+        <section id="about" aria-labelledby="about-heading">
+          <div class="section-header">
+            <h2 id="about-heading">About</h2>
+            <span class="section-count">01</span>
+          </div>
+          <div class="about-grid">
+            <article class="about-card">
+              <p>
+                I sit at the intersection of enterprise sales and developer experience — translating
+                what engineers need into outcomes leadership can measure.
+              </p>
+              <p>
+                Before Cursor, I spent years in B2B SaaS helping fast-growing teams evaluate,
+                adopt, and expand new platforms. I care about authentic discovery, tight feedback
+                loops, and demos that feel like real work — not slide decks.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="work" aria-labelledby="work-heading">
+          <div class="section-header">
+            <h2 id="work-heading">Experience</h2>
+            <span class="section-count">02</span>
+          </div>
+          <div class="timeline">
+            <article class="timeline-item">
+              <span class="timeline-year">2024 —</span>
+              <div class="timeline-body">
+                <h3>Account Executive</h3>
+                <p class="timeline-meta">Cursor · San Francisco</p>
+                <p>
+                  Own full-cycle enterprise deals for the AI-first code editor. Run technical
+                  evaluations, security reviews, and rollout planning with engineering champions
+                  and economic buyers.
+                </p>
+                <div class="tag-row">
+                  <span class="tag tag--grep">Enterprise</span>
+                  <span class="tag tag--read">DevEx</span>
+                  <span class="tag tag--edit">AI SDLC</span>
+                </div>
+              </div>
+            </article>
+            <article class="timeline-item">
+              <span class="timeline-year">2021 — 2024</span>
+              <div class="timeline-body">
+                <h3>Account Executive</h3>
+                <p class="timeline-meta">B2B SaaS · Bay Area</p>
+                <p>
+                  Closed net-new and expansion revenue across mid-market and enterprise accounts.
+                  Built repeatable discovery frameworks and partnered with solutions engineers on
+                  complex evaluations.
+                </p>
+                <div class="tag-row">
+                  <span class="tag tag--thinking">Pipeline</span>
+                  <span class="tag">Multi-threading</span>
+                </div>
+              </div>
+            </article>
+            <article class="timeline-item">
+              <span class="timeline-year">Earlier</span>
+              <div class="timeline-body">
+                <h3>Sales &amp; GTM</h3>
+                <p class="timeline-meta">Startups &amp; growth-stage companies</p>
+                <p>
+                  Started in SDR and AE roles across developer tools and infrastructure — learning
+                  to speak both roadmap and revenue.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="projects" aria-labelledby="projects-heading">
+          <div class="section-header">
+            <h2 id="projects-heading">Projects</h2>
+            <span class="section-count">03</span>
+          </div>
+          <div class="projects-grid">
+            <a class="project-card" href="brick-breaker.html">
+              <div class="project-icon" aria-hidden="true">{ }</div>
+              <h3 class="project-title">Brick Breaker</h3>
+              <p class="project-desc">
+                A vanilla canvas game built during the Cursor SDLC workshop — paddle physics,
+                local leaderboard, and zero dependencies.
+              </p>
+              <span class="project-link">Play →</span>
+            </a>
+            <article class="project-card">
+              <div class="project-icon" aria-hidden="true">◎</div>
+              <h3 class="project-title">SDLC Workshop</h3>
+              <p class="project-desc">
+                Hands-on curriculum for GTM teams to experience Plan → Develop → Review → Deploy
+                using Cursor's agent-first workflow.
+              </p>
+              <span class="project-link" style="color: var(--muted-clay)">Internal</span>
+            </article>
+            <article class="project-card">
+              <div class="project-icon" aria-hidden="true">⌘</div>
+              <h3 class="project-title">Demo Playbooks</h3>
+              <p class="project-desc">
+                Structured narratives for enterprise evaluations — security, context, agents, and
+                measurable developer productivity outcomes.
+              </p>
+              <span class="project-link" style="color: var(--muted-clay)">In progress</span>
+            </article>
+          </div>
+        </section>
+
+        <section id="contact" aria-labelledby="contact-heading">
+          <div class="section-header">
+            <h2 id="contact-heading">Contact</h2>
+            <span class="section-count">04</span>
+          </div>
+          <div class="contact-panel">
+            <h3>Let's talk about your team's AI workflow.</h3>
+            <p>
+              Whether you're exploring a pilot, scaling Cursor across engineering, or just curious
+              about agent-first development — I'd love to hear what you're building.
+            </p>
+            <div class="contact-links">
+              <a href="mailto:josh.suzuki@cursor.com">Email</a>
+              <a href="https://www.linkedin.com/in/joshsuzuki" target="_blank" rel="noopener noreferrer"
+                >LinkedIn</a
+              >
+              <a href="https://cursor.com" target="_blank" rel="noopener noreferrer">Cursor</a>
+            </div>
+          </div>
+          <footer class="site-footer">
+            © 2026 Josh Suzuki · Built with the Cursor design language
+          </footer>
+        </section>
+      </main>
     </div>
+
     <script>
       (function () {
-        const canvas = document.getElementById("game");
-        const ctx = canvas.getContext("2d");
-        const W = canvas.width;
-        const H = canvas.height;
+        const links = document.querySelectorAll(".nav-link");
+        const sections = [...links].map((l) => document.getElementById(l.dataset.section)).filter(Boolean);
 
-        const BALL_R = 6;
-        const BALL_SPEED = 3.4;
-        const PADDLE_W = 80;
-        const PADDLE_H = 12;
-        const PADDLE_Y = H - 36;
-        const PADDLE_SPEED = 5.5;
-        /** How much paddle edge curves the ball (lower = gentler) */
-        const PADDLE_ENGLISH = 1.6;
-        const COLS = 5;
-        const ROWS = 3;
-        const PAD = 8;
-        const TOP = 28;
-        const GAP = 6;
-
-        /** "Neon dusk" — top = sunset, mid = violet, bottom = deep sea */
-        const BRICK_ROW_COLORS = ["#ff6b6b", "#a55eea", "#26de81"];
-
-        const LS_TOP = "brickBreaker_top5";
-        const LS_TRY = "brickBreaker_gameTry";
-
-        /** @type {{ score: number; try: number; name: string; attempt: number }[]} */
-        let topScores = [];
-        /** Games ever started (persisted); current round try equals this value while playing. */
-        let gameTry = 0;
-        let currentGameTry = 0;
-
-        let playerName = "";
-        /** Runs with this name this session (1 = first game, 2 = first replay, …). */
-        let sessionAttempt = 0;
-        let currentGameAttempt = 0;
-
-        let mode = "ready";
-        let score = 0;
-        const keys = { left: false, right: false };
-
-        function normalizeScoreEntry(e) {
-          if (!e || typeof e.score !== "number" || typeof e.try !== "number") return null;
-          return {
-            score: e.score,
-            try: e.try,
-            name: typeof e.name === "string" && e.name.trim().length ? e.name.trim().slice(0, 24) : "Player",
-            attempt: typeof e.attempt === "number" && e.attempt >= 1 ? e.attempt : 1,
-          };
-        }
-
-        function loadTopScores() {
-          try {
-            const raw = localStorage.getItem(LS_TOP);
-            if (!raw) return [];
-            const parsed = JSON.parse(raw);
-            if (!Array.isArray(parsed)) return [];
-            return parsed.map(normalizeScoreEntry).filter(Boolean).slice(0, 5);
-          } catch {
-            return [];
+        function setActive() {
+          let current = sections[0]?.id;
+          const offset = 120;
+          for (const section of sections) {
+            const top = section.getBoundingClientRect().top;
+            if (top <= offset) current = section.id;
           }
+          links.forEach((link) => {
+            link.classList.toggle("active", link.dataset.section === current);
+          });
         }
 
-        function saveTopScores(list) {
-          localStorage.setItem(LS_TOP, JSON.stringify(list.slice(0, 5)));
-          topScores = list.slice(0, 5);
-        }
-
-        function loadGameTry() {
-          const n = parseInt(localStorage.getItem(LS_TRY) || "0", 10);
-          return Number.isFinite(n) && n >= 0 ? n : 0;
-        }
-
-        function saveGameTry(n) {
-          localStorage.setItem(LS_TRY, String(n));
-          gameTry = n;
-        }
-
-        function recordHighScore(finalScore, tryNum, name, attemptNum) {
-          const merged = [
-            ...topScores,
-            {
-              score: finalScore,
-              try: tryNum,
-              name: (name && name.trim()) || "Player",
-              attempt: attemptNum >= 1 ? attemptNum : 1,
-            },
-          ];
-          merged.sort((a, b) => b.score - a.score || b.try - a.try);
-          saveTopScores(merged.slice(0, 5));
-        }
-
-        topScores = loadTopScores();
-        gameTry = loadGameTry();
-
-        const paddle = { x: W / 2 - PADDLE_W / 2, y: PADDLE_Y, w: PADDLE_W, h: PADDLE_H };
-        const ball = { x: W / 2, y: PADDLE_Y - BALL_R - 2, r: BALL_R, vx: 1.2, vy: -BALL_SPEED };
-        let bricks = [];
-
-        function buildBricks() {
-          bricks = [];
-          const totalGap = GAP * (COLS - 1);
-          const bw = Math.floor((W - 2 * PAD - totalGap) / COLS);
-          const bh = 22;
-          for (let row = 0; row < ROWS; row++) {
-            for (let col = 0; col < COLS; col++) {
-              bricks.push({
-                x: PAD + col * (bw + GAP),
-                y: TOP + row * (bh + GAP),
-                w: bw,
-                h: bh,
-                row,
-                alive: true,
-              });
-            }
-          }
-        }
-
-        function aliveCount() {
-          return bricks.filter((b) => b.alive).length;
-        }
-
-        function resetPositions() {
-          paddle.x = W / 2 - PADDLE_W / 2;
-          ball.x = paddle.x + PADDLE_W / 2;
-          ball.y = paddle.y - BALL_R - 2;
-          ball.vx = 1.2;
-          ball.vy = -BALL_SPEED;
-          const m = Math.hypot(ball.vx, ball.vy) || 1;
-          ball.vx = (ball.vx / m) * BALL_SPEED;
-          ball.vy = (ball.vy / m) * BALL_SPEED;
-        }
-
-        function getPlayerNameFromInput() {
-          const el = document.getElementById("player-name");
-          const v = (el && el.value) ? el.value.trim() : "";
-          return v.length ? v.slice(0, 24) : "Player";
-        }
-
-        function startOrRestart() {
-          const nextName = getPlayerNameFromInput();
-          if (mode === "ready") {
-            playerName = nextName;
-            sessionAttempt = 1;
-          } else if (mode === "won" || mode === "lost") {
-            const prevName = playerName;
-            playerName = nextName;
-            if (nextName !== prevName) {
-              sessionAttempt = 1;
-            } else {
-              sessionAttempt += 1;
-            }
-          }
-          gameTry += 1;
-          saveGameTry(gameTry);
-          currentGameTry = gameTry;
-          currentGameAttempt = sessionAttempt;
-          buildBricks();
-          score = 0;
-          mode = "playing";
-          resetPositions();
-          canvas.focus();
-        }
-
-        function clampPaddle() {
-          paddle.x = Math.max(0, Math.min(W - paddle.w, paddle.x));
-        }
-
-        function walls() {
-          if (ball.x - ball.r < 0) {
-            ball.x = ball.r;
-            ball.vx *= -1;
-          } else if (ball.x + ball.r > W) {
-            ball.x = W - ball.r;
-            ball.vx *= -1;
-          }
-          if (ball.y - ball.r < 0) {
-            ball.y = ball.r;
-            ball.vy *= -1;
-          }
-        }
-
-        function paddleHit() {
-          if (ball.vy < 0) return;
-          const { x: px, y: py, w: pw, h: ph } = paddle;
-          if (ball.y + ball.r < py) return;
-          if (ball.y - ball.r > py + ph) return;
-          if (ball.x + ball.r < px) return;
-          if (ball.x - ball.r > px + pw) return;
-          ball.y = py - ball.r;
-          ball.vy *= -1;
-          const cx = px + pw / 2;
-          const offset = (ball.x - cx) / (pw / 2);
-          ball.vx += offset * PADDLE_ENGLISH;
-          const sp = Math.hypot(ball.vx, ball.vy) || 1;
-          ball.vx = (ball.vx / sp) * BALL_SPEED;
-          ball.vy = (ball.vy / sp) * BALL_SPEED;
-        }
-
-        function brickHit(brick) {
-          if (!brick.alive) return false;
-          const rx = brick.x,
-            ry = brick.y,
-            rw = brick.w,
-            rh = brick.h;
-          const bx = rx + rw / 2;
-          const by = ry + rh / 2;
-          const dx = ball.x - bx;
-          const dy = ball.y - by;
-          const hw = rw / 2 + ball.r;
-          const hh = rh / 2 + ball.r;
-          if (Math.abs(dx) >= hw || Math.abs(dy) >= hh) return false;
-          const ox = hw - Math.abs(dx);
-          const oy = hh - Math.abs(dy);
-          if (ox < oy) {
-            ball.x += dx > 0 ? ox : -ox;
-            ball.vx *= -1;
-          } else {
-            ball.y += dy > 0 ? oy : -oy;
-            ball.vy *= -1;
-          }
-          brick.alive = false;
-          score += 1;
-          return true;
-        }
-
-        function tick() {
-          if (mode !== "playing") return;
-          let move = 0;
-          if (keys.left) move -= 1;
-          if (keys.right) move += 1;
-          paddle.x += move * PADDLE_SPEED;
-          clampPaddle();
-
-          ball.x += ball.vx;
-          ball.y += ball.vy;
-          walls();
-          paddleHit();
-          for (let i = 0; i < bricks.length; i++) {
-            if (brickHit(bricks[i])) break;
-          }
-          if (aliveCount() === 0) {
-            recordHighScore(score, currentGameTry, playerName, currentGameAttempt);
-            mode = "won";
-            return;
-          }
-          if (ball.y - ball.r > H) {
-            recordHighScore(score, currentGameTry, playerName, currentGameAttempt);
-            mode = "lost";
-          }
-        }
-
-        const elTop = document.getElementById("hud-top");
-        const elStatus = document.getElementById("hud-status");
-        const elPlayerSetup = document.getElementById("player-setup");
-        const elPlayerPlaying = document.getElementById("player-playing");
-        const elPlayerSummary = document.getElementById("player-summary");
-        const elSummaryBody = document.getElementById("player-summary-body");
-        const elPlayerDisplayName = document.getElementById("player-display-name");
-        const elPlayerAttempt = document.getElementById("player-attempt");
-        const elNameLabel = document.getElementById("player-name-label");
-        const elNameInput = document.getElementById("player-name");
-
-        let lastHudMode = "ready";
-
-        function updateHud() {
-          if (mode === "ready") {
-            elPlayerSummary.classList.add("hidden");
-            elPlayerSetup.classList.remove("hidden");
-            elPlayerPlaying.classList.add("hidden");
-            elNameLabel.textContent = "Your name";
-            elNameInput.placeholder = "Enter name, then Space or Enter";
-          } else if (mode === "playing") {
-            elPlayerSummary.classList.add("hidden");
-            elPlayerSetup.classList.add("hidden");
-            elPlayerPlaying.classList.remove("hidden");
-            elPlayerDisplayName.textContent = playerName || "Player";
-            elPlayerAttempt.textContent = String(currentGameAttempt);
-          } else {
-            elPlayerSummary.classList.remove("hidden");
-            elPlayerSetup.classList.remove("hidden");
-            elPlayerPlaying.classList.add("hidden");
-            elNameLabel.textContent = "Name for next game";
-            elNameInput.placeholder = "Keep or change your name — Space or Enter";
-            elSummaryBody.replaceChildren();
-            elSummaryBody.appendChild(document.createTextNode("Played as "));
-            const nameStrong = document.createElement("strong");
-            nameStrong.textContent = playerName || "Player";
-            elSummaryBody.appendChild(nameStrong);
-            elSummaryBody.appendChild(
-              document.createTextNode(
-                " · Attempt " + currentGameAttempt + " · Score " + score
-              )
-            );
-            if (lastHudMode === "playing") {
-              elNameInput.value = playerName;
-              requestAnimationFrame(function () {
-                elNameInput.focus();
-              });
-            }
-          }
-
-          elTop.replaceChildren();
-          for (let i = 0; i < 5; i++) {
-            const entry = topScores[i];
-            if (entry) {
-              const row = document.createElement("div");
-              row.className = "lb-row";
-              row.setAttribute("role", "listitem");
-
-              const rank = document.createElement("span");
-              rank.className = "lb-rank";
-              rank.textContent = String(i + 1);
-
-              const body = document.createElement("div");
-              body.className = "lb-body";
-
-              const line1 = document.createElement("div");
-              line1.className = "lb-line1";
-              const nm = document.createElement("span");
-              nm.className = "lb-name";
-              nm.textContent = entry.name;
-
-              const line2 = document.createElement("div");
-              line2.className = "lb-line2";
-              line2.appendChild(document.createTextNode(String(entry.score) + " "));
-              const pts = document.createElement("span");
-              pts.textContent = "pts";
-              line2.appendChild(pts);
-
-              line1.appendChild(nm);
-
-              body.appendChild(line1);
-              body.appendChild(line2);
-              row.appendChild(rank);
-              row.appendChild(body);
-              elTop.appendChild(row);
-            } else {
-              const empty = document.createElement("div");
-              empty.className = "lb-row lb-row--empty";
-              empty.setAttribute("role", "listitem");
-              empty.textContent = "—";
-              elTop.appendChild(empty);
-            }
-          }
-
-          if (mode === "ready") {
-            elStatus.textContent = "Enter your name · Space or Enter to start";
-          } else if (mode === "won") {
-            elStatus.textContent =
-              "You Win — edit name if you want, then Space or Enter for the next game";
-          } else if (mode === "lost") {
-            elStatus.textContent =
-              "Game Over — edit name if you want, then Space or Enter for the next game";
-          } else {
-            elStatus.textContent = "Clear all bricks!";
-          }
-
-          lastHudMode = mode;
-        }
-
-        function draw() {
-          ctx.fillStyle = "#0f1628";
-          ctx.fillRect(0, 0, W, H);
-          for (const b of bricks) {
-            if (!b.alive) continue;
-            ctx.fillStyle = BRICK_ROW_COLORS[b.row % BRICK_ROW_COLORS.length];
-            ctx.fillRect(b.x, b.y, b.w, b.h);
-            ctx.strokeStyle = "rgba(0,0,0,0.2)";
-            ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
-          }
-          ctx.fillStyle = "#7cb7ff";
-          ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
-          ctx.beginPath();
-          ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
-          ctx.fillStyle = "#f0ebe3";
-          ctx.fill();
-
-          updateHud();
-        }
-
-        function loop() {
-          tick();
-          draw();
-          requestAnimationFrame(loop);
-        }
-
-        window.addEventListener("keydown", (e) => {
-          const canStartOrRestart = mode === "ready" || mode === "won" || mode === "lost";
-          if ((e.code === "Space" || e.code === "Enter") && canStartOrRestart) {
-            e.preventDefault();
-            startOrRestart();
-            return;
-          }
-          if (mode !== "playing") return;
-          if (e.code === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = true;
-          if (e.code === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = true;
-        });
-        window.addEventListener("keyup", (e) => {
-          if (e.code === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = false;
-          if (e.code === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
-        });
-        canvas.addEventListener("mousemove", (e) => {
-          if (mode !== "playing") return;
-          const r = canvas.getBoundingClientRect();
-          const sx = (e.clientX - r.left) * (W / r.width);
-          paddle.x = sx - paddle.w / 2;
-          clampPaddle();
-        });
-        canvas.addEventListener("click", () => canvas.focus());
-
-        buildBricks();
-        resetPositions();
-        elNameInput.focus();
-        requestAnimationFrame(loop);
+        window.addEventListener("scroll", setActive, { passive: true });
+        setActive();
       })();
     </script>
   </body>

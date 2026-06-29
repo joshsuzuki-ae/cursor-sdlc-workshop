@@ -1,23 +1,21 @@
-# Base MVP
+# Personal Site
 
-This folder is where your project code lives.
+Josh Suzuki's personal site, styled to match the [Cursor](https://cursor.com) design language — warm parchment canvas, espresso ink typography, and ember-orange accents.
 
-## What to Build
-- A minimal, working version of your project
-- Should run locally and do *something* visible
-- Keep it simple — 10 minutes max!
+## Files
 
-### Good Examples
-- A Chrome extension with one button that does one thing
-- A web page with basic HTML/CSS/JS
-- A simple CLI script
+| File | Description |
+|------|-------------|
+| `index.html` | Personal site (open this first) |
+| `brick-breaker.html` | Brick Breaker game from the SDLC workshop |
 
-### Instructions
+## Run locally
 
-1. Tell Cursor to read the `prd.md` in your project folder
-2. Tell Cursor to generate the base MVP here
-3. Tell Cursor to run it locally and verify it works
+No build step required. Open in a browser:
 
-### After You're Done
-
-> **Ask Cursor:** "Commit all my changes with the message 'Base MVP scaffold', push to my fork, and open a PR to the original repo"
+```bash
+open index.html
+# or
+python3 -m http.server 8080
+# then visit http://localhost:8080
+```
