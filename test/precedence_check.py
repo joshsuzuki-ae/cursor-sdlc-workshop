@@ -4,7 +4,9 @@ def add(a, b):
     return result
 
 def risky_divide(a, b):
-    return a / b  # no zero check on purpose
+    if b == 0:
+        return None
+    return a / b
 
 if __name__ == "__main__":
     print(add(2, 3))
